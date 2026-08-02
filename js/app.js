@@ -10,8 +10,8 @@
   const ME = CONTENT.me;
 
   const SCENES = [
-    { key: 'char',    no: '01', name: '角色档案', en: 'CHARACTER', desc: '我是谁，属性面板拉出来给你看' },
-    { key: 'gallery', no: '02', name: '作品库',   en: 'GALLERY',   desc: '手工 / 绘画 / 设计 / 手账' },
+    { key: 'char',    no: '01', name: '角色档案', en: 'CHARACTER', desc: '基本信息 · 实习经历 · 自白' },
+    { key: 'gallery', no: '02', name: '作品库',   en: 'GALLERY',   desc: '主视觉 / 活动运营 / AI Coding / 品牌 / 插画' },
     { key: 'contact', no: '03', name: '联络',     en: 'CONTACT',   desc: '想说什么就打在终端里' },
   ];
 
@@ -20,14 +20,32 @@
     set(k, v) { try { localStorage.setItem('weirdo.' + k, JSON.stringify(v)); } catch {} },
   };
 
-  /* ---------------- 音效 ---------------- */
+  /* ---------------- 音效 ----------------
+     默认全开（BGM + 音效）。只有自己按 M / 点右上角 ♪ 才会关，关了会记住。 */
   const Sound = {
-    on: false, ctx: null, bgm: null,
+    on: store.get('sound', true), ctx: null, bgm: null, noiseBuf: null,
     init() {
-      if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch {} }
-      if (!this.bgm) { this.bgm = $('#bgm'); if (this.bgm) this.bgm.volume = .35; }
+      if (!this.ctx) {
+        try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+        if (this.ctx) {
+          // 一段短白噪声，键盘敲击声的"咔"就是它
+          const n = Math.floor(this.ctx.sampleRate * .04);
+          this.noiseBuf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);
+          const d = this.noiseBuf.getChannelData(0);
+          for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n) ** 2;
+        }
+      }
+      if (!this.bgm) { this.bgm = $('#bgm'); if (this.bgm) this.bgm.volume = .5; }
+    },
+    // 没有用户手势时 AudioContext 是 suspended，任何一次点击/按键都拿来解锁
+    unlock() {
+      this.init();
+      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+      if (this.on && this.bgm && this.bgm.paused) this.bgm.play().catch(() => {});
+      const m = $('#bootMute'); if (m) m.hidden = true;
     },
     play(freq = 440, dur = .06, type = 'square', vol = .05) {
+      this.init();
       if (!this.on || !this.ctx) return;
       const o = this.ctx.createOscillator(), g = this.ctx.createGain();
       o.type = type; o.frequency.value = freq;
@@ -36,10 +54,35 @@
       o.connect(g).connect(this.ctx.destination);
       o.start(); o.stop(this.ctx.currentTime + dur);
     },
-    move() { this.play(320, .04, 'square', .035); },
-    ok()   { this.play(660, .09); setTimeout(() => this.play(880, .09), 70); },
-    get_() { this.play(523, .08); setTimeout(() => this.play(784, .12), 80); setTimeout(() => this.play(1046, .16), 180); },
-    type() { this.play(1200 + Math.random() * 300, .012, 'square', .015); },
+    // 噪声"咔"：dur 决定长短，freq/q 决定是清脆还是闷
+    click(dur = .02, vol = .06, freq = 1800, q = 1.4) {
+      this.init();
+      if (!this.on || !this.ctx || !this.noiseBuf) return;
+      const t = this.ctx.currentTime;
+      const src = this.ctx.createBufferSource(); src.buffer = this.noiseBuf;
+      const bp = this.ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = q;
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      src.connect(bp).connect(g).connect(this.ctx.destination);
+      src.start(t); src.stop(t + dur + .01);
+    },
+    move() { this.play(320, .05, 'square', .05); },
+    ok()   { this.play(660, .09, 'square', .07); setTimeout(() => this.play(880, .09, 'square', .07), 70); },
+    get_() { this.play(523, .08, 'square', .07); setTimeout(() => this.play(784, .12, 'square', .07), 80); setTimeout(() => this.play(1046, .16, 'square', .07), 180); },
+    // 键帽一按：一声清脆的咔 + 一点低频的"托"
+    type() {
+      this.click(.016 + Math.random() * .008, .075, 1400 + Math.random() * 1100, 1.6);
+      this.play(88 + Math.random() * 26, .022, 'sine', .04);
+    },
+    // 空格键：闷一点、宽一点
+    space() { this.click(.03, .065, 700, .7); this.play(70, .03, 'sine', .045); }, 
+    // 回车/换行：一声更沉的
+    enter() { this.click(.05, .1, 620, .6); this.play(58, .05, 'sine', .055); },
+    // 鼠标扫过按钮时的轻响
+    soft() { this.click(.012, .035, 2600, 2.2); },
+    // 按下去的"嗒"
+    tap() { this.click(.03, .07, 950, .9); this.play(150, .03, 'square', .035); },
     setOn(v) {
       this.init(); this.on = v;
       const b = $('#soundBtn');
@@ -53,6 +96,19 @@
       if (this.on) this.ok();
     },
   };
+  // 第一次点击/按键就把音频解锁，开机页的键盘声才响得出来
+  ['pointerdown', 'keydown', 'touchstart'].forEach(t =>
+    document.addEventListener(t, () => Sound.unlock(), { capture: true, passive: true }));
+
+  // 所有按钮：扫过去一声轻响，按下去一声"嗒"。tabs / cards 是后生成的，所以用委托
+  const hoverable = e => e.target.closest('button, a.btn-key, .card, .tab, .menu-item');
+  document.addEventListener('pointerover', e => {
+    const b = hoverable(e);
+    if (!b || b.disabled) return;
+    if (e.relatedTarget && b.contains(e.relatedTarget)) return; // 在同一个按钮里挪动不重复响
+    Sound.soft();
+  });
+  document.addEventListener('pointerdown', e => { if (hoverable(e)) Sound.tap(); });
 
   /* ---------------- 提示条 ---------------- */
   function toast(label, text, gold) {
@@ -70,38 +126,85 @@
     g.classList.remove('on'); void g.offsetWidth; g.classList.add('on');
   }
 
-  /* ---------------- 开机 ---------------- */
+  /* ---------------- 开机：像在敲一份 weirdo.js ---------------- */
+  // k = 行类型，用来上色：cmd 命令行 / out 输出 / code 代码 / cmt 注释
   const BOOT_LINES = [
-    'WEIRDO SYSTEM v2.0  ——  booting',
-    'loading player .............. WU SHUXUN / 吴舒逊',
-    'location .................... 湖南 · 浏阳',
-    'class ....................... 视觉设计 / 手作成瘾者',
-    'inventory ................... 水彩笔, 掐丝镊子, 美工刀, 手账本',
-    'warning ..................... 完美主义 99 / 胆量 82',
-    'ready.',
+    { k: 'cmt',  s: '// weirdo.js — 一个人的视觉作品集' },
+    { k: 'cmd',  s: '$ node weirdo.js --boot' },
+    { k: 'out',  s: 'compiling player ...' },
+    { k: 'code', s: 'const me = {' },
+    { k: 'code', s: '  name:   "吴舒逊",' },
+    { k: 'code', s: '  born:   "2005-02-08",' },
+    { k: 'code', s: '  base:   "everywhere",' },
+    { k: 'code', s: '  school: "湖南师范大学 / 艺术设计学",' },
+    { k: 'code', s: '  skills: ["沟通", "设计思维", "团队合作", "问题解决", "自我驱动"],' },
+    { k: 'code', s: '  perfectionism: 99,' },
+    { k: 'code', s: '};' },
+    { k: 'code', s: 'export default me;' },
+    { k: 'out',  s: 'compiled successfully.' },
+    { k: 'cmd',  s: '$ open portfolio' },
   ];
 
+  const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  // 行打完之后再上色：字符串、数字、属性名各给一个颜色
+  function paint(el, kind, text) {
+    let h = esc(text);
+    if (kind === 'code') {
+      // 顺序要紧：先包字符串，再包属性名/数字/关键字，避免规则打到已插入的标签上
+      h = h.replace(/"([^"]*)"/g, '<u class="s-str">"$1"</u>')
+           .replace(/^(\s*)([a-z]+)(:)/i, '$1<u class="s-key">$2</u>$3')
+           .replace(/(:\s+)(\d+)/g, '$1<u class="s-num">$2</u>')
+           .replace(/\b(const|export|default)\b/g, '<u class="s-kw">$1</u>');
+    }
+    el.innerHTML = h;
+  }
+
+  let bootDone = false;
   function boot() {
     const log = $('#bootLog');
-    let li = 0, ci = 0;
+    Sound.init();
+    // 先试着直接出声（之前在本站放过声音的浏览器会放行）
+    if (Sound.on && Sound.bgm) Sound.bgm.play().catch(() => {});
+    // 浏览器不允许没交互就出声，先挂个提示，用户一动就撤掉
+    if (Sound.ctx && Sound.ctx.state === 'suspended') $('#bootMute').hidden = false;
+    const STEP = 2;              // 一次敲进去两个字符，键声才不会糊成一片
+    let li = 0, ci = 0, beat = 0, line = null;
     const tick = () => {
       if (li >= BOOT_LINES.length) {
-        $('.boot-title').classList.add('show');
-        setTimeout(() => { $('#startBtn').hidden = false; $('#startBtn').focus(); }, 420);
+        bootDone = true;
+        Sound.ok();
+        const p = document.createElement('span');
+        p.className = 'b-enter';
+        p.innerHTML = '按 <kbd>ENTER</kbd> 进入 &nbsp;<i>（或点一下这里）</i>';
+        log.appendChild(p);
         return;
       }
-      const line = BOOT_LINES[li];
-      log.textContent += line[ci] ?? '';
-      Sound.type();
-      ci++;
-      if (ci > line.length) { log.textContent += '\n'; li++; ci = 0; setTimeout(tick, 90); }
-      else setTimeout(tick, 8);
+      const { k, s } = BOOT_LINES[li];
+      if (ci === 0) {
+        line = document.createElement('span');
+        line.className = 'b-line b-' + k;
+        line.dataset.caret = '1';
+        log.appendChild(line);
+      }
+      ci = Math.min(ci + STEP, s.length);
+      line.textContent = s.slice(0, ci);
+      if (beat++ % 2 === 0) (s[ci - 1] === ' ' ? Sound.space() : Sound.type());
+      if (ci >= s.length) {
+        paint(line, k, s);
+        delete line.dataset.caret;
+        Sound.enter();
+        li++; ci = 0;
+        setTimeout(tick, k === 'cmd' ? 300 : 110);
+      } else {
+        setTimeout(tick, k === 'code' ? 26 : 34);
+      }
     };
-    setTimeout(tick, 350);
+    setTimeout(tick, 300);
   }
 
   function start() {
-    Sound.setOn(store.get('sound', true));
+    // 一进来就要有 BGM（这一步是用户手势，浏览器才允许播放）
+    Sound.setOn(Sound.on);
     $('#boot').classList.add('off');
     setTimeout(() => { $('#boot').hidden = true; }, 520);
     $('#hud').hidden = false; $('#stage').hidden = false; $('#keybar').hidden = false;
@@ -113,13 +216,18 @@
 
   /* ---------------- 封面视频 ---------------- */
   function coverFx() {
-    const v = $('#coverVid'), hud = $('#hud');
+    const v = $('#coverVid'), cue = $('#scrollCue');
     if (!v) return;
 
-    // 封面露在视野里时，HUD 收起来不挡视频
+    // 封面还占着大半屏时显示"往下滑"，滑走就收起
     new IntersectionObserver(([e]) => {
-      hud.classList.toggle('is-away', e.intersectionRatio > .35);
-    }, { threshold: [0, .2, .35, .5, .8, 1] }).observe(v);
+      cue.classList.toggle('is-gone', e.intersectionRatio < .75);
+    }, { threshold: [0, .25, .5, .75, .9, 1] }).observe(v);
+
+    cue.addEventListener('click', () => {
+      $('#hubMenu').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      Sound.move();
+    });
 
     // 正放到尾 → 逐帧倒放回开头 → 再正放，循环
     let raf = 0, prev = 0;
@@ -144,10 +252,13 @@
     if (!target) return;
     $$('.scene').forEach(s => s.classList.toggle('is-active', s === target));
     cur = key;
+    // 目录页不显示顶部 HUD，只在章节里出现；目录页开启吸附滚动
+    $('#hud').classList.toggle('is-away', key === 'hub');
+    document.documentElement.classList.toggle('snap', key === 'hub');
     $$('#hudNav button').forEach(b => b.classList.toggle('on', b.dataset.go === key));
     window.scrollTo({ top: 0, behavior: 'auto' });
     glitch(); Sound.move();
-    if (key === 'char') { runStats(); startDialogue(); }
+    if (key === 'char') startDialogue();
     history.replaceState(null, '', key === 'hub' ? location.pathname : '#' + key);
   }
 
@@ -180,22 +291,25 @@
     $('#hudName').textContent = ME.handle;
     $('#charName').textContent = ME.name;
     $('#charRole').textContent = ME.role;
-    $('#charInfo').innerHTML = ME.infos.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('');
-    $('#charStats').innerHTML = ME.stats.map(([k, v]) => `
-      <div class="stat"><span>${k}</span>
-        <span class="stat-track"><span class="stat-fill" data-v="${v}"></span></span>
-        <span class="stat-num">${v}</span></div>`).join('');
-    $('#charSkills').innerHTML = ME.skills.map(s => `<span>${s}</span>`).join('');
-    $('#charGear').innerHTML = ME.gear.map(s => `<span>${s}</span>`).join('');
-  }
-  function runStats() {
-    $$('.stat-fill').forEach((f, i) => {
-      f.style.transform = 'scaleX(0)';
-      setTimeout(() => { f.style.transform = `scaleX(${f.dataset.v / 100})`; }, 90 * i + 120);
-    });
+    // 基本信息：两组一行
+    let rows = '';
+    for (let i = 0; i < ME.infos.length; i += 2) {
+      rows += '<tr>' + ME.infos.slice(i, i + 2)
+        .map(([k, v]) => `<th>${k}</th><td>${v}</td>`).join('') + '</tr>';
+    }
+    $('#charInfo').innerHTML = rows;
+    $('#charIntern').innerHTML = ME.intern.map(j => `
+      <li>
+        <div class="job-top">
+          <b>${j.co}</b>
+          <span class="job-role">${j.role}</span>
+          <span class="job-date">${j.date}</span>
+        </div>
+        <ul class="job-pts">${j.points.map(p => `<li>${p}</li>`).join('')}</ul>
+      </li>`).join('');
   }
 
-  /* 打字机对白 */
+  /* 打字机对白：一句一句点「继续」 */
   let dlgI = 0, typing = null, typedAll = false;
   function startDialogue() {
     if (typedAll) return;
@@ -234,13 +348,18 @@
     const c = CONTENT.gallery[i];
     $$('#galTabs .tab').forEach((t, n) => t.classList.toggle('on', n === i));
     $('#galIntro').textContent = c.intro;
-    $('#galGrid').innerHTML = c.items.map((w, n) => {
-      const rot = (n % 3 - 1) * 1.1;
+    // 一屏铺满：行数按件数定，列数由行数推出来，格子都是 1fr，不留空白也不挤压
+    const n = c.items.length;
+    const rows = n <= 3 ? 1 : n % 2 === 0 ? 2 : 1;
+    const grid = $('#galGrid');
+    grid.style.setProperty('--rows', rows);
+    grid.style.setProperty('--cols', Math.ceil(n / rows));
+    grid.innerHTML = c.items.map((w, k) => {
       const inner = w.img
         ? `<img src="${w.img}" alt="${w.title}" loading="lazy">`
         : `<span class="slot-hint">空槽位<br><small>把图片放进 img/ 后<br>在 content.js 里填路径</small></span>`;
-      return `<button class="card${w.img ? '' : ' empty'}" style="--rot:${rot}deg" data-i="${n}">
-        <span class="card-no">${c.no}-${String(n + 1).padStart(2, '0')}</span>
+      return `<button class="card${w.img ? '' : ' empty'}" data-i="${k}" style="--d:${k * 45}ms">
+        <span class="card-no">${c.no}-${String(k + 1).padStart(2, '0')}</span>
         <span class="card-img">${inner}</span>
         <span class="card-cap"><b>${w.title}</b><i>${w.meta || ''}</i></span>
       </button>`;
@@ -251,13 +370,22 @@
   let lbI = 0;
   function openLb(i) {
     lbI = i; const w = CONTENT.gallery[curCat].items[i];
-    $('#lbImg').innerHTML = w.img
-      ? `<img src="${w.img}" alt="${w.title}">`
-      : '这一格还没有放图<br>（图片准备好之后，填进 content.js 就会出现）';
+    const box = $('#lbImg'), frame = $('.lb-frame');
+    // imgs 是多张图：上下拼成一张长图，在灯箱里滑着看
+    const long = Array.isArray(w.imgs) && w.imgs.length > 0;
+    box.classList.toggle('long', long);
+    if (long) {
+      box.innerHTML = w.imgs.map((s, n) =>
+        `<img src="${s}" alt="${w.title} ${n + 1}" ${n ? 'loading="lazy"' : ''}>`).join('');
+    } else {
+      box.innerHTML = w.img
+        ? `<img src="${w.img}" alt="${w.title}">`
+        : '这一格还没有放图<br>（图片准备好之后，填进 content.js 就会出现）';
+    }
     $('#lbTitle').textContent = w.title;
-    $('#lbMeta').textContent = w.meta || '';
+    $('#lbMeta').textContent = (w.meta || '') + (long ? '　↕ 上下滑动看长图' : '');
     $('#lbDesc').textContent = w.desc || '';
-    $('#lightbox').hidden = false; Sound.ok();
+    $('#lightbox').hidden = false; frame.scrollTop = 0; Sound.ok();
   }
   function stepLb(d) {
     const items = CONTENT.gallery[curCat].items;
@@ -270,12 +398,20 @@
     const subject = encodeURIComponent('来自作品集的消息');
     $('#mailLink').href = `mailto:${ME.email}?subject=${subject}`;
     const saved = store.get('msgs', []);
-    termLine(`weirdo@portfolio:~$ hello`);
-    termLine(`你好。这里是吴舒逊的留言终端。`);
-    termLine(`邮箱：${ME.email}${ME.wechat ? '　微信：' + ME.wechat : ''}`);
-    if (saved.length) termLine(`（本机已存 ${saved.length} 条草稿）`);
+    termLine('$ cat README');
+    termLine('这里是吴舒逊的留言终端，下面三行照着填就行。');
+    termLine(`mail   : ${ME.email}`);
+    if (ME.phone) termLine(`phone  : ${ME.phone}`);
+    if (saved.length) termLine(`draft  : 本机已存 ${saved.length} 条`);
   }
   function termLine(t) { $('#termLog').textContent += t + '\n'; }
+
+  // 在终端里打字，键盘声跟着响
+  $$('.tline input, .tline textarea').forEach(el => el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') Sound.enter();
+    else if (e.key === ' ') Sound.space();
+    else if (e.key.length === 1 || e.key === 'Backspace') Sound.type();
+  }));
 
   $('#msgForm').addEventListener('submit', e => {
     e.preventDefault();
@@ -296,12 +432,12 @@
     const goBtn = e.target.closest('[data-go]');
     if (goBtn) { go(goBtn.dataset.go); return; }
     const tab = e.target.closest('.tab');
-    if (tab) { renderCat(+tab.dataset.cat); Sound.move(); return; }
+    if (tab) { renderCat(+tab.dataset.cat); glitch(); Sound.move(); return; }
     const card = e.target.closest('.card');
     if (card) { openLb(+card.dataset.i); return; }
   });
 
-  $('#startBtn').addEventListener('click', start);
+  $('#boot').addEventListener('click', () => { if (bootDone) start(); });
   $('#soundBtn').addEventListener('click', () => Sound.toggle());
   $('#lbClose').addEventListener('click', closeLb);
   $('#lbPrev').addEventListener('click', () => stepLb(-1));
@@ -310,13 +446,22 @@
 
   let egg = '';
   document.addEventListener('keydown', e => {
-    // 开机页
-    if (!$('#boot').hidden) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); start(); } return; }
+    // 开机页：代码敲完了，按回车进入
+    if (!$('#boot').hidden) {
+      if (bootDone && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); start(); }
+      return;
+    }
     // 灯箱优先
     if (!$('#lightbox').hidden) {
       if (e.key === 'Escape') closeLb();
       if (e.key === 'ArrowLeft') stepLb(-1);
       if (e.key === 'ArrowRight') stepLb(1);
+      // 长图用上下键滑
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp') {
+        e.preventDefault();
+        const f = $('.lb-frame'), big = /Page/.test(e.key) ? f.clientHeight * .9 : 160;
+        f.scrollBy({ top: /Down/.test(e.key) ? big : -big, behavior: 'smooth' });
+      }
       return;
     }
     const typingField = /INPUT|TEXTAREA/.test(document.activeElement.tagName);
@@ -356,6 +501,10 @@
     $('#boot').hidden = true;
     $('#hud').hidden = false; $('#stage').hidden = false; $('#keybar').hidden = false;
     go(deep);
+    // 直接带 # 进来没有开机手势，浏览器不让自动播；等第一次点击/按键再开 BGM
+    const kick = () => { Sound.setOn(Sound.on); document.removeEventListener('pointerdown', kick); document.removeEventListener('keydown', kick); };
+    document.addEventListener('pointerdown', kick);
+    document.addEventListener('keydown', kick);
   } else {
     boot();
   }

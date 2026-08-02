@@ -19,18 +19,15 @@
 <div class="fx-vignette" aria-hidden="true"></div>
 <div class="fx-glitch" id="fxGlitch" aria-hidden="true"></div>
 
-<!-- ============ 开机 ============ -->
+<!-- ============ 开机（像在敲代码） ============ -->
 <section class="boot" id="boot">
   <div class="boot-box">
-    <pre class="boot-log" id="bootLog" aria-live="polite"></pre>
-    <div class="boot-title">
-      <span class="boot-title-main">PORTFOLIO</span>
-      <span class="boot-title-sub">视觉作品集 · WEIRDO SYSTEM</span>
+    <div class="boot-chrome">
+      <span></span><span></span><span></span>
+      <b>weirdo.js — ~/portfolio</b>
+            <em class="boot-mute" id="bootMute" hidden>点一下页面 · 开音乐和键盘声</em>
     </div>
-    <button class="btn-start" id="startBtn" hidden>
-      <span>PRESS START</span>
-      <small>点击 或 按 ENTER</small>
-    </button>
+    <pre class="boot-log" id="bootLog" aria-live="polite"></pre>
   </div>
 </section>
 
@@ -58,9 +55,14 @@
     <figure class="cover">
       <video id="coverVid" src="img/a/cover.mp4" poster="img/a/cover.jpg" autoplay muted playsinline preload="auto"
              aria-label="PORTFOLIO 视觉作品集 · 吴舒逊 WeirDo"></video>
+      <button class="scroll-cue" id="scrollCue">
+        <span>往下滑 · 看目录</span>
+        <i aria-hidden="true"></i>
+      </button>
     </figure>
 
-    <div class="torn">
+    <div class="torn" id="hubMenu">
+
       <ol class="menu" id="menu"></ol>
       <p class="menu-tip">键盘 <kbd>1</kbd>–<kbd>3</kbd> 直达 · <kbd>↑</kbd><kbd>↓</kbd> 选择 · <kbd>ENTER</kbd> 进入</p>
     </div>
@@ -74,27 +76,20 @@
     </div>
     <div class="char-grid">
       <div class="char-portrait">
-        <div class="bracket"></div>
         <img id="charImg" alt="吴舒逊">
         <div class="char-plate">
           <b id="charName"></b><span id="charRole"></span>
         </div>
       </div>
       <div class="char-panel">
+        <h3 class="sec-t"><i>01</i>基本信息</h3>
         <table class="info" id="charInfo"></table>
-        <div class="stats" id="charStats"></div>
-        <div class="tags">
-          <h3>技能</h3>
-          <div id="charSkills" class="tag-row"></div>
-          <h3>随身装备</h3>
-          <div id="charGear" class="tag-row gear"></div>
-        </div>
+        <h3 class="sec-t"><i>02</i>实习经历</h3>
+        <ol class="intern" id="charIntern"></ol>
       </div>
-    </div>
-    <div class="dialog" id="dialog">
-      <div class="dialog-face"><img id="dlgAvatar" alt=""></div>
-      <div class="dialog-body">
-        <p id="dlgText"></p>
+      <div class="dialog" id="dialog">
+        <div class="dialog-face"><img id="dlgAvatar" alt=""></div>
+        <div class="dialog-body"><p id="dlgText"></p></div>
         <button class="dialog-next" id="dlgNext">继续 ▾</button>
       </div>
     </div>
@@ -119,21 +114,30 @@
       <h2>联络 <em>CONTACT</em></h2>
     </div>
     <div class="term">
-      <div class="term-bar"><span></span><span></span><span></span> weirdo@portfolio ~ 留言</div>
+      <div class="term-bar"><span></span><span></span><span></span> weirdo@portfolio — /dev/message</div>
       <div class="term-body">
         <pre id="termLog"></pre>
         <form id="msgForm" autocomplete="off">
-          <label>你是谁 <input id="mName" maxlength="24" placeholder="名字 / 代号" required></label>
-          <label>怎么找你 <input id="mBack" maxlength="60" placeholder="邮箱、微信、随便" ></label>
-          <label>说点什么 <textarea id="mText" maxlength="500" rows="3" placeholder="想问的、想合作的、想吐槽的" required></textarea></label>
+          <label class="tline">
+            <i>$</i><b>whoami</b>
+            <input id="mName" maxlength="24" placeholder="名字 / 代号" required>
+          </label>
+          <label class="tline">
+            <i>$</i><b>contact</b>
+            <input id="mBack" maxlength="60" placeholder="邮箱 / 微信 / 随便">
+          </label>
+          <label class="tline tline-area">
+            <i>$</i><b>message</b>
+            <textarea id="mText" maxlength="500" rows="3" placeholder="想问的、想合作的、想吐槽的" required></textarea>
+          </label>
           <div class="term-actions">
-            <button type="submit" class="btn-key">发送 ⏎</button>
-            <a class="btn-key ghost" id="mailLink" href="#">用邮箱发给我</a>
+            <button type="submit" class="btn-key">send ⏎</button>
+            <a class="btn-key ghost" id="mailLink" href="#">open mail</a>
+            <span class="term-hint">留言只存在你自己的浏览器里（纯静态站，没有后端）</span>
           </div>
         </form>
       </div>
     </div>
-    <p class="contact-note">留言只会存在你自己的浏览器里（这是个纯静态站，没有后端）。要真的联系我，点上面的邮箱按钮。</p>
   </section>
 
 </main>
