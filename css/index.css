@@ -7,10 +7,9 @@ body {
 }
 .page-shell {
     width: 1920px;
-    margin: 0;
-    transform-origin: top left;
-    transform: scale(var(--page-scale, 1));
+    margin: 0 auto;
 }
+
 
 
 .top {

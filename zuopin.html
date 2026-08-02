@@ -538,8 +538,12 @@
 (function () {
   var BASE_WIDTH = 1920;
   function syncPageScale() {
+    var shell = document.querySelector('.page-shell');
+    if (!shell) {
+      return;
+    }
     var scale = Math.min(1, window.innerWidth / BASE_WIDTH);
-    document.documentElement.style.setProperty('--page-scale', scale.toFixed(4));
+    shell.style.zoom = scale.toFixed(4);
   }
   window.addEventListener('resize', syncPageScale);
   window.addEventListener('orientationchange', syncPageScale);
