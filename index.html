@@ -1,172 +1,197 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<title>无标题文档</title>
-<style type="text/css">
-* {
-    padding: 0px;
-    margin: 0px;
-}
-#loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255,255,255,1.00);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-        }
-.loader {
-    width: 100%;
-    height: 100%;
-    background-image: url(img/zhuye/GIF_20240929225643746.gif);
-    background-repeat: no-repeat;
-    background-position: 50% 0%;
-}
-.top {
-    width: 1920px;
-    height: 110px;
-}
-.main {
-    width: 1400px;
-    height: 969px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-.under {
-    width: 1920px;
-    background-image: url(img/zhuye/Group%201.jpg);
-    height: 171px;
-}
-.main .zuo .shang {
-    display: flex;
-    flex-direction: column;
-    width: 753px;
-    margin-top: -256px;
-    height: 686px;
-}
-.zuo .shang img {
-    margin-top: 122px;
-}
-.zuo .shang p {
-    color: #505050;
-    font-family: "等线";
-    font-size: 32px;
-    width: 742px;
-    height: 128px;
-    line-height: 40px;
-    display: flex;
-    align-items: flex-start;
-    background-image: url(img/zhuye/1111%201.png);
-    background-repeat: no-repeat;
-    background-position: 49% 38%;
-}
-.zuo .shang button {
-    background-color: #E68F5D;
-    width: 163px;
-    height: 68px;
-    border-radius: 17px;
-    border-style: none;
-    -webkit-box-shadow: 3px 4px 5px -1px #8A8A8A;
-    box-shadow: 3px 4px 5px -1px #8A8A8A;
-    color: #FFFFFF;
-    font-family: "等线";
-    font-size: 32px;
-    line-height: 55px;
-    text-align: center;
-}
-.zuo .shang button:hover  {
-    transform: scale(1.2,1.2);
-    background-color: #FF9E65;
-    color: #FFFFFF;
-	transition: transform 1s ease;
-}
-.ke2 .main .you {
-    height: 667px;
-    width: 462px;
-}
-.zuo .shang a {
-    color: #FFFFFF;
-    text-decoration: none;
-}
-.ke11 .top #a {
-    background-color: #FFFFFF;
-}
-</style>
-<link href="css/index.css" rel="stylesheet" type="text/css">
-<link href="css/xiala.css" rel="stylesheet" type="text/css">
-<script>
-(function () {
-  var BASE_WIDTH = 1920;
-  function syncPageScale() {
-    var shell = document.querySelector('.page-shell');
-    if (!shell) {
-      return;
-    }
-    var scale = Math.min(1, window.innerWidth / BASE_WIDTH);
-    shell.style.zoom = scale.toFixed(4);
-  }
-  window.addEventListener('resize', syncPageScale);
-  window.addEventListener('orientationchange', syncPageScale);
-  document.addEventListener('DOMContentLoaded', syncPageScale);
-  syncPageScale();
-})();
-</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEIRDO · 吴舒逊视觉作品集</title>
+<meta name="description" content="吴舒逊（WeirDo）的视觉作品集：手工、绘画、设计、手账。">
+<link rel="stylesheet" href="css/weirdo.css">
 </head>
-<body>
-<div class="page-shell">
-<div class="ke11">
-  <div class="top">
-    <div class="logo"><img src="img/zhuye/logo.png" alt="" width="146" height="55"></div>
-    <div class="nav">
-      <ul>
-        <li><a href="index.html">我的主页</a></li>
-        <li><a href="jianjie.html">个人简介</a></li>
-        <li><a href="zuopin.html">我的作品</a></li>
-        <li><a href="suipian.html">生活碎片</a></li>
-      </ul>
-    </div>	  
-    <div class="caidan"><a href="#"></a>
-	  <div class="dropdown-content">
-        <a href="#">联系</a>
-        <a href="#">关于</a>
-		<a href="#">设置</a>
+<body class="booting">
+
+<!-- 全局质感层 -->
+<div class="fx-grain" aria-hidden="true"></div>
+<div class="fx-scan" aria-hidden="true"></div>
+<div class="fx-vignette" aria-hidden="true"></div>
+<div class="fx-glitch" id="fxGlitch" aria-hidden="true"></div>
+
+<!-- ============ 开机 ============ -->
+<section class="boot" id="boot">
+  <div class="boot-box">
+    <pre class="boot-log" id="bootLog" aria-live="polite"></pre>
+    <div class="boot-title">
+      <span class="boot-title-main">PORTFOLIO</span>
+      <span class="boot-title-sub">视觉作品集 · WEIRDO SYSTEM</span>
     </div>
-</div>
+    <button class="btn-start" id="startBtn" hidden>
+      <span>PRESS START</span>
+      <small>点击 或 按 ENTER</small>
+    </button>
   </div>
-</div>
-<div class="ke2">
-  <div class="main">
-    <div class="zuo">
-      <div class="shang"><img src="img/zhuye/Hi%20there.%20I%E2%80%99m%20Wu%20Shuxun,%20a%20student..png" alt="" width="746" height="123"><br>
-        <p>迎来到我的网页，一个充满惊喜和创意的地方。准备好迎接全新的体验了吗？</p>
-		  <button><a href="liuyan.html">给我留言</a></button>
+</section>
+
+<!-- ============ HUD ============ -->
+<header class="hud" id="hud" hidden>
+  <button class="hud-home" data-go="hub" title="回目录 (ESC)">
+    <img id="hudAvatar" alt="">
+    <span class="hud-id">
+      <b id="hudName">WeirDo</b>
+      <i>LV.20 · 设计在读</i>
+    </span>
+  </button>
+  <nav class="hud-nav" id="hudNav"></nav>
+  <div class="hud-right">
+    <span class="hud-frag" title="生活碎片收集进度">碎片 <b id="fragCount">0</b>/<i id="fragTotal">6</i></span>
+    <button class="hud-btn" id="soundBtn" aria-pressed="false" title="音效开关 (M)">♪ OFF</button>
+  </div>
+</header>
+
+<!-- ============ 舞台 ============ -->
+<main id="stage" hidden>
+
+  <!-- ---- 目录 ---- -->
+  <section class="scene scene-hub is-active" data-scene="hub">
+    <h1 class="sr-only">PORTFOLIO · 视觉作品集 · 吴舒逊 WeirDo</h1>
+    <figure class="cover">
+      <img src="img/a/cover.jpg" alt="PORTFOLIO 视觉作品集 · 吴舒逊 WeirDo" fetchpriority="high">
+    </figure>
+
+    <div class="hub-mid">
+      <div class="pola-row">
+        <figure class="polaroid p1">
+          <div class="tape tape-a"></div>
+          <div class="pola-photo"><span class="slot-hint">照片位<br><small>content.js</small></span></div>
+          <figcaption>本人 · 大概是这样</figcaption>
+        </figure>
+        <figure class="polaroid p2">
+          <div class="clip"></div>
+          <div class="pola-photo"><span class="slot-hint">照片位</span></div>
+          <figcaption>在拍东西</figcaption>
+        </figure>
+      </div>
+      <aside class="hub-note">
+        <p class="hub-quote">“色彩是我一整天的痴迷、喜悦和折磨。”<span>—— 克劳德·莫奈</span></p>
+        <div class="marquee" aria-hidden="true">
+          <span>手工 · 绘画 · 设计 · 手账 · 案件迷 · 恐怖故事 · MINECRAFT · 单曲循环 · 掐丝珐琅 · 一片银杏叶 · </span>
+          <span>手工 · 绘画 · 设计 · 手账 · 案件迷 · 恐怖故事 · MINECRAFT · 单曲循环 · 掐丝珐琅 · 一片银杏叶 · </span>
+        </div>
+        <p class="hub-hint">往下选一个入口，或者直接按 <kbd>1</kbd>。</p>
+      </aside>
+    </div>
+
+    <div class="torn">
+      <ol class="menu" id="menu"></ol>
+      <p class="menu-tip">键盘 <kbd>1</kbd>–<kbd>4</kbd> 直达 · <kbd>↑</kbd><kbd>↓</kbd> 选择 · <kbd>ENTER</kbd> 进入</p>
+    </div>
+  </section>
+
+  <!-- ---- 角色档案 ---- -->
+  <section class="scene scene-char" data-scene="char">
+    <div class="scene-head">
+      <span class="scene-no">01</span>
+      <h2>角色档案 <em>CHARACTER</em></h2>
+    </div>
+    <div class="char-grid">
+      <div class="char-portrait">
+        <div class="bracket"></div>
+        <img id="charImg" alt="吴舒逊">
+        <div class="char-plate">
+          <b id="charName"></b><span id="charRole"></span>
+        </div>
+      </div>
+      <div class="char-panel">
+        <table class="info" id="charInfo"></table>
+        <div class="stats" id="charStats"></div>
+        <div class="tags">
+          <h3>技能</h3>
+          <div id="charSkills" class="tag-row"></div>
+          <h3>随身装备</h3>
+          <div id="charGear" class="tag-row gear"></div>
+        </div>
       </div>
     </div>
-    <div class="you"><img src="img/zhuye/Group%20131.png" alt="" width="477" height="579"></div>
-  </div>
+    <div class="dialog" id="dialog">
+      <div class="dialog-face"><img id="dlgAvatar" alt=""></div>
+      <div class="dialog-body">
+        <p id="dlgText"></p>
+        <button class="dialog-next" id="dlgNext">继续 ▾</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- 作品库 ---- -->
+  <section class="scene scene-gallery" data-scene="gallery">
+    <div class="scene-head">
+      <span class="scene-no">02</span>
+      <h2>作品库 <em>GALLERY</em></h2>
+    </div>
+    <div class="tabs" id="galTabs" role="tablist"></div>
+    <p class="gal-intro" id="galIntro"></p>
+    <div class="gal-grid" id="galGrid"></div>
+  </section>
+
+  <!-- ---- 生活碎片 ---- -->
+  <section class="scene scene-frag" data-scene="frag">
+    <div class="scene-head">
+      <span class="scene-no">03</span>
+      <h2>生活碎片 <em>FRAGMENTS</em></h2>
+    </div>
+    <p class="frag-tip">点开每一张卡片，把碎片捡齐 —— 全部捡完会解锁一张隐藏卡。</p>
+    <div class="frag-grid" id="fragGrid"></div>
+    <div class="secret" id="secret" hidden></div>
+  </section>
+
+  <!-- ---- 联络 ---- -->
+  <section class="scene scene-contact" data-scene="contact">
+    <div class="scene-head">
+      <span class="scene-no">04</span>
+      <h2>联络 <em>CONTACT</em></h2>
+    </div>
+    <div class="term">
+      <div class="term-bar"><span></span><span></span><span></span> weirdo@portfolio ~ 留言</div>
+      <div class="term-body">
+        <pre id="termLog"></pre>
+        <form id="msgForm" autocomplete="off">
+          <label>你是谁 <input id="mName" maxlength="24" placeholder="名字 / 代号" required></label>
+          <label>怎么找你 <input id="mBack" maxlength="60" placeholder="邮箱、微信、随便" ></label>
+          <label>说点什么 <textarea id="mText" maxlength="500" rows="3" placeholder="想问的、想合作的、想吐槽的" required></textarea></label>
+          <div class="term-actions">
+            <button type="submit" class="btn-key">发送 ⏎</button>
+            <a class="btn-key ghost" id="mailLink" href="#">用邮箱发给我</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <p class="contact-note">留言只会存在你自己的浏览器里（这是个纯静态站，没有后端）。要真的联系我，点上面的邮箱按钮。</p>
+  </section>
+
+</main>
+
+<!-- 灯箱 -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" id="lbClose" aria-label="关闭">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="上一件">‹</button>
+  <figure class="lb-frame">
+    <div class="lb-img" id="lbImg"></div>
+    <figcaption>
+      <b id="lbTitle"></b>
+      <i id="lbMeta"></i>
+      <p id="lbDesc"></p>
+    </figcaption>
+  </figure>
+  <button class="lb-nav lb-next" id="lbNext" aria-label="下一件">›</button>
 </div>
-<div class="ke3">
-  <div class="under"></div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<div class="keybar" id="keybar" hidden>
+  <span><kbd>ESC</kbd> 返回目录</span>
+  <span><kbd>1</kbd>-<kbd>4</kbd> 跳章节</span>
+  <span><kbd>M</kbd> 音效</span>
+  <span class="keybar-sign">© <b id="yr"></b> 吴舒逊 WeirDo</span>
 </div>
-	
-</div>
-<div id="loading-screen" style="display: none;">
-    <div class="loader"></div>
-</div>
-  <script>
-    window.onload = function() {
-        var loadingScreen = document.getElementById('loading-screen');
-        loadingScreen.style.display = 'block';
-        setTimeout(function() {
-            loadingScreen.style.display = 'none';
-        }, 1000); 
-    };
-</script>
+
+<script src="js/content.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
