@@ -144,9 +144,23 @@
 <link href="css/lianjie.css" rel="stylesheet" type="text/css">
 <link href="css/xiala.css" rel="stylesheet" type="text/css">
 <link href="css/lunbotu.css" rel="stylesheet" type="text/css">
+<script>
+(function () {
+  var BASE_WIDTH = 1920;
+  function syncPageScale() {
+    var scale = Math.min(1, window.innerWidth / BASE_WIDTH);
+    document.documentElement.style.setProperty('--page-scale', scale.toFixed(4));
+  }
+  window.addEventListener('resize', syncPageScale);
+  window.addEventListener('orientationchange', syncPageScale);
+  document.addEventListener('DOMContentLoaded', syncPageScale);
+  syncPageScale();
+})();
+</script>
 </head>
 
 <body>
+<div class="page-shell">
 <div class="ke">
 <div class="top">
   <div class="bubble" style="--i:1"></div>
@@ -309,6 +323,7 @@
   <div class="under"></div>
 </div>
 	
+</div>
 <div id="loading-screen" style="display: none;">
     <div class="loader"></div>
 </div>
