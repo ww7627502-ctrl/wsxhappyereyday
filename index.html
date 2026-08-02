@@ -9,6 +9,10 @@
 </head>
 <body class="booting">
 
+<!-- 背景音乐 -->
+<audio id="bgm" src="audio/bgm.mp3" loop preload="auto"></audio>
+
+
 <!-- 全局质感层 -->
 <div class="fx-grain" aria-hidden="true"></div>
 <div class="fx-scan" aria-hidden="true"></div>
@@ -41,7 +45,6 @@
   </button>
   <nav class="hud-nav" id="hudNav"></nav>
   <div class="hud-right">
-    <span class="hud-frag" title="生活碎片收集进度">碎片 <b id="fragCount">0</b>/<i id="fragTotal">6</i></span>
     <button class="hud-btn" id="soundBtn" aria-pressed="false" title="音效开关 (M)">♪ OFF</button>
   </div>
 </header>
@@ -53,35 +56,13 @@
   <section class="scene scene-hub is-active" data-scene="hub">
     <h1 class="sr-only">PORTFOLIO · 视觉作品集 · 吴舒逊 WeirDo</h1>
     <figure class="cover">
-      <img src="img/a/cover.jpg" alt="PORTFOLIO 视觉作品集 · 吴舒逊 WeirDo" fetchpriority="high">
+      <video id="coverVid" src="img/a/cover.mp4" poster="img/a/cover.jpg" autoplay muted playsinline preload="auto"
+             aria-label="PORTFOLIO 视觉作品集 · 吴舒逊 WeirDo"></video>
     </figure>
-
-    <div class="hub-mid">
-      <div class="pola-row">
-        <figure class="polaroid p1">
-          <div class="tape tape-a"></div>
-          <div class="pola-photo"><span class="slot-hint">照片位<br><small>content.js</small></span></div>
-          <figcaption>本人 · 大概是这样</figcaption>
-        </figure>
-        <figure class="polaroid p2">
-          <div class="clip"></div>
-          <div class="pola-photo"><span class="slot-hint">照片位</span></div>
-          <figcaption>在拍东西</figcaption>
-        </figure>
-      </div>
-      <aside class="hub-note">
-        <p class="hub-quote">“色彩是我一整天的痴迷、喜悦和折磨。”<span>—— 克劳德·莫奈</span></p>
-        <div class="marquee" aria-hidden="true">
-          <span>手工 · 绘画 · 设计 · 手账 · 案件迷 · 恐怖故事 · MINECRAFT · 单曲循环 · 掐丝珐琅 · 一片银杏叶 · </span>
-          <span>手工 · 绘画 · 设计 · 手账 · 案件迷 · 恐怖故事 · MINECRAFT · 单曲循环 · 掐丝珐琅 · 一片银杏叶 · </span>
-        </div>
-        <p class="hub-hint">往下选一个入口，或者直接按 <kbd>1</kbd>。</p>
-      </aside>
-    </div>
 
     <div class="torn">
       <ol class="menu" id="menu"></ol>
-      <p class="menu-tip">键盘 <kbd>1</kbd>–<kbd>4</kbd> 直达 · <kbd>↑</kbd><kbd>↓</kbd> 选择 · <kbd>ENTER</kbd> 进入</p>
+      <p class="menu-tip">键盘 <kbd>1</kbd>–<kbd>3</kbd> 直达 · <kbd>↑</kbd><kbd>↓</kbd> 选择 · <kbd>ENTER</kbd> 进入</p>
     </div>
   </section>
 
@@ -130,21 +111,11 @@
     <div class="gal-grid" id="galGrid"></div>
   </section>
 
-  <!-- ---- 生活碎片 ---- -->
-  <section class="scene scene-frag" data-scene="frag">
-    <div class="scene-head">
-      <span class="scene-no">03</span>
-      <h2>生活碎片 <em>FRAGMENTS</em></h2>
-    </div>
-    <p class="frag-tip">点开每一张卡片，把碎片捡齐 —— 全部捡完会解锁一张隐藏卡。</p>
-    <div class="frag-grid" id="fragGrid"></div>
-    <div class="secret" id="secret" hidden></div>
-  </section>
-
   <!-- ---- 联络 ---- -->
   <section class="scene scene-contact" data-scene="contact">
     <div class="scene-head">
-      <span class="scene-no">04</span>
+      <span class="scene-no">03</span>
+
       <h2>联络 <em>CONTACT</em></h2>
     </div>
     <div class="term">
@@ -186,7 +157,7 @@
 
 <div class="keybar" id="keybar" hidden>
   <span><kbd>ESC</kbd> 返回目录</span>
-  <span><kbd>1</kbd>-<kbd>4</kbd> 跳章节</span>
+  <span><kbd>1</kbd>-<kbd>3</kbd> 跳章节</span>
   <span><kbd>M</kbd> 音效</span>
   <span class="keybar-sign">© <b id="yr"></b> 吴舒逊 WeirDo</span>
 </div>

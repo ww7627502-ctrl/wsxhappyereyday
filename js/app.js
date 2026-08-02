@@ -12,8 +12,7 @@
   const SCENES = [
     { key: 'char',    no: '01', name: '角色档案', en: 'CHARACTER', desc: '我是谁，属性面板拉出来给你看' },
     { key: 'gallery', no: '02', name: '作品库',   en: 'GALLERY',   desc: '手工 / 绘画 / 设计 / 手账' },
-    { key: 'frag',    no: '03', name: '生活碎片', en: 'FRAGMENTS', desc: '可收集：眼睛、案件、银杏叶……' },
-    { key: 'contact', no: '04', name: '联络',     en: 'CONTACT',   desc: '想说什么就打在终端里' },
+    { key: 'contact', no: '03', name: '联络',     en: 'CONTACT',   desc: '想说什么就打在终端里' },
   ];
 
   const store = {
@@ -23,8 +22,11 @@
 
   /* ---------------- 音效 ---------------- */
   const Sound = {
-    on: false, ctx: null,
-    init() { if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch {} } },
+    on: false, ctx: null, bgm: null,
+    init() {
+      if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch {} }
+      if (!this.bgm) { this.bgm = $('#bgm'); if (this.bgm) this.bgm.volume = .35; }
+    },
     play(freq = 440, dur = .06, type = 'square', vol = .05) {
       if (!this.on || !this.ctx) return;
       const o = this.ctx.createOscillator(), g = this.ctx.createGain();
@@ -38,11 +40,16 @@
     ok()   { this.play(660, .09); setTimeout(() => this.play(880, .09), 70); },
     get_() { this.play(523, .08); setTimeout(() => this.play(784, .12), 80); setTimeout(() => this.play(1046, .16), 180); },
     type() { this.play(1200 + Math.random() * 300, .012, 'square', .015); },
-    toggle() {
-      this.init(); this.on = !this.on;
+    setOn(v) {
+      this.init(); this.on = v;
       const b = $('#soundBtn');
-      b.textContent = this.on ? '♪ ON' : '♪ OFF';
-      b.setAttribute('aria-pressed', String(this.on));
+      b.textContent = v ? '♪ ON' : '♪ OFF';
+      b.setAttribute('aria-pressed', String(v));
+      store.set('sound', v);
+      if (this.bgm) v ? this.bgm.play().catch(() => {}) : this.bgm.pause();
+    },
+    toggle() {
+      this.setOn(!this.on);
       if (this.on) this.ok();
     },
   };
@@ -94,14 +101,40 @@
   }
 
   function start() {
-    Sound.init();
+    Sound.setOn(store.get('sound', true));
     $('#boot').classList.add('off');
     setTimeout(() => { $('#boot').hidden = true; }, 520);
     $('#hud').hidden = false; $('#stage').hidden = false; $('#keybar').hidden = false;
     document.body.classList.remove('booting');
+    $('#coverVid')?.play().catch(() => {});
     Sound.ok(); glitch();
     go('hub');
-    if (fragsGot().length) toast('SAVE 读取', `已收集碎片 ${fragsGot().length}/${CONTENT.fragments.length}`);
+  }
+
+  /* ---------------- 封面视频 ---------------- */
+  function coverFx() {
+    const v = $('#coverVid'), hud = $('#hud');
+    if (!v) return;
+
+    // 封面露在视野里时，HUD 收起来不挡视频
+    new IntersectionObserver(([e]) => {
+      hud.classList.toggle('is-away', e.intersectionRatio > .35);
+    }, { threshold: [0, .2, .35, .5, .8, 1] }).observe(v);
+
+    // 正放到尾 → 逐帧倒放回开头 → 再正放，循环
+    let raf = 0, prev = 0;
+    const rewind = t => {
+      const dt = prev ? (t - prev) / 1000 : 0;
+      prev = t;
+      const next = v.currentTime - dt;
+      if (next <= .04) { prev = 0; v.currentTime = 0; v.play().catch(() => {}); return; }
+      v.currentTime = next;
+      raf = requestAnimationFrame(rewind);
+    };
+    v.addEventListener('ended', () => {
+      cancelAnimationFrame(raf); prev = 0;
+      raf = requestAnimationFrame(rewind);
+    });
   }
 
   /* ---------------- 场景切换 ---------------- */
@@ -129,13 +162,6 @@
       </button></li>`).join('');
     $('#hudNav').innerHTML = SCENES.map(s => `<button data-go="${s.key}">${s.no} ${s.name}</button>`).join('');
     $$('.menu-item').forEach(b => b.addEventListener('mouseenter', () => { select(SCENES.findIndex(s => s.key === b.dataset.go)); }));
-    // 目录页拍立得照片
-    (ME.photos || []).forEach((p, i) => {
-      const fig = $(`.polaroid.p${i + 1}`);
-      if (!fig) return;
-      if (p.img) fig.querySelector('.pola-photo').innerHTML = `<img src="${p.img}" alt="${p.cap || ''}">`;
-      if (p.cap) fig.querySelector('figcaption').textContent = p.cap;
-    });
   }
 
   let sel = 0;
@@ -239,45 +265,6 @@
   }
   const closeLb = () => { $('#lightbox').hidden = true; Sound.move(); };
 
-  /* ---------------- 生活碎片 ---------------- */
-  const fragsGot = () => store.get('frags', []);
-  function buildFrags() {
-    $('#fragTotal').textContent = CONTENT.fragments.length;
-    const got = fragsGot();
-    $('#fragGrid').innerHTML = CONTENT.fragments.map((f, i) => `
-      <button class="frag${got.includes(i) ? ' open' : ''}" data-f="${i}">
-        <span class="frag-ico">${f.icon}</span>
-        <b>${f.title}</b>
-        <span class="tag">${f.tag}</span>
-        <p>${f.text.replace(/</g, '&lt;')}</p>
-        <span class="more">点击查看 ▸</span>
-      </button>`).join('');
-    syncFrag();
-  }
-  function syncFrag() {
-    const got = fragsGot();
-    $('#fragCount').textContent = got.length;
-    if (got.length >= CONTENT.fragments.length) showSecret();
-  }
-  function takeFrag(i) {
-    const card = $(`.frag[data-f="${i}"]`);
-    card.classList.toggle('open');
-    const got = fragsGot();
-    if (!got.includes(i)) {
-      got.push(i); store.set('frags', got); syncFrag();
-      Sound.get_();
-      toast('FRAGMENT GET', `${CONTENT.fragments[i].title}（${got.length}/${CONTENT.fragments.length}）`);
-    } else Sound.move();
-  }
-  function showSecret() {
-    const s = $('#secret');
-    if (!s.hidden) return;
-    s.hidden = false;
-    s.innerHTML = `<span class="frag-ico">${CONTENT.secret.icon}</span><b>${CONTENT.secret.title}</b><p>${CONTENT.secret.text}</p>`;
-    toast('ACHIEVEMENT', '碎片全部收集 · 隐藏卡已解锁', true);
-    Sound.get_();
-  }
-
   /* ---------------- 联络 ---------------- */
   function buildContact() {
     const subject = encodeURIComponent('来自作品集的消息');
@@ -312,8 +299,6 @@
     if (tab) { renderCat(+tab.dataset.cat); Sound.move(); return; }
     const card = e.target.closest('.card');
     if (card) { openLb(+card.dataset.i); return; }
-    const frag = e.target.closest('.frag');
-    if (frag) { takeFrag(+frag.dataset.f); return; }
   });
 
   $('#startBtn').addEventListener('click', start);
@@ -339,7 +324,7 @@
 
     if (e.key === 'Escape') { go('hub'); return; }
     if (e.key.toLowerCase() === 'm') { Sound.toggle(); return; }
-    if (/^[1-4]$/.test(e.key)) { go(SCENES[+e.key - 1].key); return; }
+    if (/^[1-3]$/.test(e.key)) { go(SCENES[+e.key - 1].key); return; }
     if (cur === 'hub') {
       if (e.key === 'ArrowDown') { e.preventDefault(); select(sel + 1); }
       if (e.key === 'ArrowUp') { e.preventDefault(); select(sel - 1); }
@@ -361,8 +346,9 @@
 
   /* ---------------- 启动 ---------------- */
   $('#yr').textContent = new Date().getFullYear();
-  buildMenu(); buildChar(); buildGallery(); buildFrags(); buildContact();
+  buildMenu(); buildChar(); buildGallery(); buildContact();
   select(0);
+  coverFx();
 
   // 带 # 的链接可以直接进到对应章节（分享用），否则走开机动画
   const deep = location.hash.replace('#', '');
