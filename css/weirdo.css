@@ -175,6 +175,10 @@ kbd{
 }
 .hud-nav button:hover{color:#fff}
 .hud-nav button.on{color:#fff;border-color:var(--red)}
+/* 回目录：手机上没有 ESC，这颗按钮就是唯一的退路，做得显眼一点 */
+.hud-nav .nav-home{color:var(--paper);border:1px solid rgba(239,230,220,.3);margin-right:.4em}
+.hud-nav .nav-home:hover{border-color:var(--red);background:rgba(200,32,47,.18)}
+.hud-nav .nav-home.on{border-color:rgba(239,230,220,.3)}
 .hud-right{display:flex;align-items:center;gap:.7em;margin-left:clamp(6px,1.6vw,20px)}
 .hud-btn{
   font-family:var(--f-mono);font-size:.68rem;letter-spacing:.14em;padding:.3em .6em;

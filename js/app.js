@@ -9,6 +9,10 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const ME = CONTENT.me;
 
+  // 触屏设备（没有键盘、没有 hover）：所有键盘提示都换成能点的说法
+  const TOUCH = matchMedia('(hover:none) and (pointer:coarse)').matches;
+  document.documentElement.classList.toggle('touch', TOUCH);
+
   const SCENES = [
     { key: 'char',    no: '01', name: '角色档案', en: 'CHARACTER', desc: '基本信息 · 实习经历 · 自白' },
     { key: 'gallery', no: '02', name: '作品库',   en: 'GALLERY',   desc: '主视觉 / 活动运营 / AI Coding / 品牌 / 插画' },
@@ -175,7 +179,9 @@
         Sound.ok();
         const p = document.createElement('span');
         p.className = 'b-enter';
-        p.innerHTML = '按 <kbd>ENTER</kbd> 进入 &nbsp;<i>（或点一下这里）</i>';
+        p.innerHTML = TOUCH
+          ? '点一下这里进入 ▸'
+          : '按 <kbd>ENTER</kbd> 进入 &nbsp;<i>（或点一下这里）</i>';
         log.appendChild(p);
         return;
       }
@@ -286,8 +292,15 @@
         <span class="m-txt"><b>${s.name}</b><i>${s.en}</i><span>${s.desc}</span></span>
         <span class="m-go">▶</span>
       </button></li>`).join('');
-    $('#hudNav').innerHTML = SCENES.map(s => `<button data-go="${s.key}">${s.no} ${s.name}</button>`).join('');
+    // 章节导航第一个就是「回目录」：手机上没有 ESC，得有个能点的
+    $('#hudNav').innerHTML = '<button class="nav-home" data-go="hub">← 目录</button>'
+      + SCENES.map(s => `<button data-go="${s.key}">${s.no} ${s.name}</button>`).join('');
     $$('.menu-item').forEach(b => b.addEventListener('mouseenter', () => { select(SCENES.findIndex(s => s.key === b.dataset.go)); }));
+    if (TOUCH) {
+      $('.menu-tip').textContent = '点一下卡片进入 · 左上角「目录」随时回来';
+      $$('.keybar span:not(.keybar-sign)').forEach(s => s.remove());
+      $('.keybar').insertAdjacentHTML('afterbegin', '<span>点卡片进入 · 顶栏「目录」返回 · ♪ 关音效</span>');
+    }
   }
 
   let sel = 0;
