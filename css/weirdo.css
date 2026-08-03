@@ -594,29 +594,56 @@ html.snap .cover,html.snap .torn{scroll-snap-align:start}
    响应式
    ========================================================= */
 @media (max-width:900px){
-  /* 一屏锁高的前提下，窄屏不再上下堆叠，直接让文字栏占满 */
-  .char-grid{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
-  .char-portrait{display:none}
-  .dialog-face{display:none}
-  /* 手机上一屏塞不下六项信息 + 三段实习，让这一栏自己能滑 */
-  .char-panel{overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-  /* 章节导航留着（手机上没有键盘快捷键），压成能横滑的小标签 */
-  .hud-nav{gap:.1em;overflow-x:auto;scrollbar-width:none}
-  .hud-nav::-webkit-scrollbar{display:none}
-  .hud-nav button{font-size:.7rem;padding:.3em .4em;letter-spacing:.02em}
+  /* 手机上不再锁一屏：一屏塞不下就往下排，整页滚动，保证每样东西都完整看得到 */
+  html.snap{scroll-snap-type:none}
+  .scene{min-height:auto}
+  .scene-char,.scene-gallery,.scene-contact{
+    height:auto;min-height:100svh;overflow:visible;
+    padding-top:88px;padding-bottom:clamp(72px,11vh,110px);
+  }
+  .scene-char.is-active,.scene-gallery.is-active,.scene-contact.is-active{display:block}
+  .scene-head{flex-wrap:wrap;align-items:flex-end;margin-bottom:clamp(14px,2.6vh,24px)}
+
+  /* HUD 换成两行：上排身份 + 音效，下排三个章节按钮，谁都不会被切掉 */
+  .hud{flex-wrap:wrap;row-gap:.3rem;padding:.5rem var(--pad)}
+  .hud-home img{width:32px;height:32px}
   .hud-id i{display:none}
+  .hud-right{margin-left:auto}
+  .hud-nav{order:3;flex:1 0 100%;margin-left:0;gap:.1em;overflow:visible}
+  .hud-nav button{font-size:.74rem;padding:.2em .45em;letter-spacing:.04em}
   .keybar span:not(.keybar-sign){display:none}
+
+  /* 封面视频原比例（4:3）整段显示，不再按满屏裁掉两侧 */
+  .cover{height:auto;aspect-ratio:4/3;margin-bottom:clamp(12px,2.4vh,24px)}
+  .cover img,.cover video{height:auto;aspect-ratio:4/3;object-fit:contain}
+  .torn{min-height:auto}
+
+  /* 角色档案：立拍得 → 基本信息 → 实习 → 对白，依次往下，全部可见 */
+  .char-grid{display:block;height:auto}
+  .char-portrait{display:block;margin-bottom:clamp(14px,2.6vh,24px)}
+  .char-portrait img{height:auto;max-height:56svh;object-fit:contain}
+  .char-plate{margin-top:.6em}
+  .char-panel{display:block;overflow:visible}
+  .dialog{margin-top:clamp(14px,2.6vh,24px)}
+  .dialog-face img{width:40px;height:40px}
+
   /* 六个分类排一行横滑，不占掉三行高度 */
   .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-bottom:clamp(10px,1.8vh,18px)}
   .tabs::-webkit-scrollbar{display:none}
   .tab{flex:0 0 auto;padding:.45em .9em}
   .gal-intro{max-width:none}
-  /* 作品固定两列，格子够大看得清，件数多了这一块自己滑 */
+  /* 作品固定两列，行高按图片比例撑开，跟着页面一起往下滚 */
   .gal-grid{
+    height:auto;overflow:visible;
     grid-template-columns:repeat(2,minmax(0,1fr));
-    grid-template-rows:none;grid-auto-rows:minmax(34vh,auto);
-    overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    grid-template-rows:none;grid-auto-rows:auto;
   }
+  .card-img{flex:0 0 auto;aspect-ratio:4/5}
+  .card-cap b{font-size:14px}
+
+  /* 联络终端跟着内容长高，输入框不会被压掉 */
+  .term{height:auto}
+
   /* 灯箱：左右按钮不再挤占图片宽度，改成浮在底部 */
   .lb-frame{max-width:100%;max-height:78vh}
   .lb-nav{position:fixed;bottom:calc(var(--pad) + env(safe-area-inset-bottom,0px));z-index:2;background:rgba(8,4,5,.7)}
@@ -636,8 +663,10 @@ html.snap .cover,html.snap .torn{scroll-snap-align:start}
   .b-line{padding-left:2.6em}
   .b-line::before{width:1.8em}
   .b-enter{padding-left:2.6em}
-  /* 对白框压矮，给上面的实习经历留位置 */
-  .dialog{grid-template-columns:minmax(0,1fr) auto;padding:.7em .8em}
+  /* 对白框：「继续」单独一行，正文不被挤成窄条 */
+  .dialog{grid-template-columns:auto minmax(0,1fr);padding:.7em .8em;row-gap:.5em}
+  .dialog-body{grid-column:2}
+  .dialog-next{grid-column:1/-1;justify-self:end}
   .dialog-body p{min-height:3.4em}
   /* iOS 上输入框字号小于 16px 会自动放大整页，锁死 16px */
   .tline input,.tline textarea{font-size:16px}

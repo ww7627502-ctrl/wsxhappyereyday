@@ -300,12 +300,8 @@
 
   /* ---------------- 角色档案 ---------------- */
   function buildChar() {
-    // 手机上大立拍得和对话头像都是 display:none，索性别加载（省流量、省内存）
-    const wide = !matchMedia('(max-width:900px)').matches;
-    if (wide) {
-      $('#charImg').src = ME.hero;
-      $('#dlgAvatar').src = ME.avatar;
-    }
+    $('#charImg').src = ME.hero;
+    $('#dlgAvatar').src = ME.avatar;
     $('#hudAvatar').src = ME.avatar;
     $('#hudName').textContent = ME.handle;
     $('#charName').textContent = ME.name;
