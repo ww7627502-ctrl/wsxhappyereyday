@@ -215,6 +215,7 @@
   }
 
   /* ---------------- 封面视频 ---------------- */
+  let coverCtl = null;
   function coverFx() {
     const v = $('#coverVid'), cue = $('#scrollCue');
     if (!v) return;
@@ -231,6 +232,7 @@
 
     // 正放到尾 → 逐帧倒放回开头 → 再正放，循环
     let raf = 0, prev = 0;
+    const stop = () => { cancelAnimationFrame(raf); raf = 0; prev = 0; };
     const rewind = t => {
       const dt = prev ? (t - prev) / 1000 : 0;
       prev = t;
@@ -239,9 +241,20 @@
       v.currentTime = next;
       raf = requestAnimationFrame(rewind);
     };
-    v.addEventListener('ended', () => {
-      cancelAnimationFrame(raf); prev = 0;
-      raf = requestAnimationFrame(rewind);
+    // 手机和小屏不做逐帧倒放：scrub currentTime 很吃 CPU 和电，直接循环播
+    const light = matchMedia('(max-width:900px)').matches
+      || matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if (light) v.loop = true;
+    else v.addEventListener('ended', () => { stop(); raf = requestAnimationFrame(rewind); });
+
+    // 不在目录页、或者切到别的标签页，就把视频和 rAF 都停掉
+    coverCtl = {
+      pause() { stop(); v.pause(); },
+      resume() { v.play().catch(() => {}); },
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) coverCtl.pause();
+      else if (cur === 'hub') coverCtl.resume();
     });
   }
 
@@ -258,6 +271,8 @@
     $$('#hudNav button').forEach(b => b.classList.toggle('on', b.dataset.go === key));
     window.scrollTo({ top: 0, behavior: 'auto' });
     glitch(); Sound.move();
+    // 离开目录页就停掉封面视频，回来再续上
+    if (key === 'hub') coverCtl?.resume(); else coverCtl?.pause();
     if (key === 'char') startDialogue();
     history.replaceState(null, '', key === 'hub' ? location.pathname : '#' + key);
   }
@@ -285,8 +300,12 @@
 
   /* ---------------- 角色档案 ---------------- */
   function buildChar() {
-    $('#charImg').src = ME.hero;
-    $('#dlgAvatar').src = ME.avatar;
+    // 手机上大立拍得和对话头像都是 display:none，索性别加载（省流量、省内存）
+    const wide = !matchMedia('(max-width:900px)').matches;
+    if (wide) {
+      $('#charImg').src = ME.hero;
+      $('#dlgAvatar').src = ME.avatar;
+    }
     $('#hudAvatar').src = ME.avatar;
     $('#hudName').textContent = ME.handle;
     $('#charName').textContent = ME.name;
@@ -376,10 +395,10 @@
     box.classList.toggle('long', long);
     if (long) {
       box.innerHTML = w.imgs.map((s, n) =>
-        `<img src="${s}" alt="${w.title} ${n + 1}" ${n ? 'loading="lazy"' : ''}>`).join('');
+        `<img src="${s}" alt="${w.title} ${n + 1}" decoding="async" ${n ? 'loading="lazy"' : ''}>`).join('');
     } else {
       box.innerHTML = w.img
-        ? `<img src="${w.img}" alt="${w.title}">`
+        ? `<img src="${w.img}" alt="${w.title}" decoding="async">`
         : '这一格还没有放图<br>（图片准备好之后，填进 content.js 就会出现）';
     }
     $('#lbTitle').textContent = w.title;
@@ -391,7 +410,25 @@
     const items = CONTENT.gallery[curCat].items;
     openLb((lbI + d + items.length) % items.length);
   }
-  const closeLb = () => { $('#lightbox').hidden = true; Sound.move(); };
+  // 关掉就把图从 DOM 里摘掉，长图解码后很占内存，别一直挂着
+  const closeLb = () => {
+    $('#lightbox').hidden = true;
+    $('#lbImg').innerHTML = '';
+    Sound.move();
+  };
+
+  // 手机上左右滑切上一件/下一件（竖着滑是看长图，不拦）
+  (() => {
+    const lb = $('#lightbox');
+    let x0 = 0, y0 = 0;
+    lb.addEventListener('touchstart', e => {
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    }, { passive: true });
+    lb.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) stepLb(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  })();
 
   /* ---------------- 联络 ---------------- */
   function buildContact() {

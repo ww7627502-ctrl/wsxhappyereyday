@@ -595,11 +595,33 @@ html.snap .cover,html.snap .torn{scroll-snap-align:start}
    ========================================================= */
 @media (max-width:900px){
   /* 一屏锁高的前提下，窄屏不再上下堆叠，直接让文字栏占满 */
-  .char-grid{grid-template-columns:1fr}
+  .char-grid{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
   .char-portrait{display:none}
   .dialog-face{display:none}
-  .hud-nav{display:none}
+  /* 手机上一屏塞不下六项信息 + 三段实习，让这一栏自己能滑 */
+  .char-panel{overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  /* 章节导航留着（手机上没有键盘快捷键），压成能横滑的小标签 */
+  .hud-nav{gap:.1em;overflow-x:auto;scrollbar-width:none}
+  .hud-nav::-webkit-scrollbar{display:none}
+  .hud-nav button{font-size:.7rem;padding:.3em .4em;letter-spacing:.02em}
+  .hud-id i{display:none}
   .keybar span:not(.keybar-sign){display:none}
+  /* 六个分类排一行横滑，不占掉三行高度 */
+  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-bottom:clamp(10px,1.8vh,18px)}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;padding:.45em .9em}
+  .gal-intro{max-width:none}
+  /* 作品固定两列，格子够大看得清，件数多了这一块自己滑 */
+  .gal-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-rows:none;grid-auto-rows:minmax(34vh,auto);
+    overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  }
+  /* 灯箱：左右按钮不再挤占图片宽度，改成浮在底部 */
+  .lb-frame{max-width:100%;max-height:78vh}
+  .lb-nav{position:fixed;bottom:calc(var(--pad) + env(safe-area-inset-bottom,0px));z-index:2;background:rgba(8,4,5,.7)}
+  .lb-prev{left:var(--pad)}
+  .lb-next{right:var(--pad)}
 }
 @media (max-width:560px){
   body{cursor:auto}
@@ -609,6 +631,22 @@ html.snap .cover,html.snap .torn{scroll-snap-align:start}
   .info tr{margin-bottom:.5em}
   .info th{border:0;padding-bottom:0}
   .job-date{margin-left:0}
+  /* 开机窗口：行号窄一点，别让代码换行换得太碎 */
+  .boot-log{min-height:11em;line-height:1.85;padding:clamp(12px,3vw,18px) clamp(10px,3vw,16px)}
+  .b-line{padding-left:2.6em}
+  .b-line::before{width:1.8em}
+  .b-enter{padding-left:2.6em}
+  /* 对白框压矮，给上面的实习经历留位置 */
+  .dialog{grid-template-columns:minmax(0,1fr) auto;padding:.7em .8em}
+  .dialog-body p{min-height:3.4em}
+  /* iOS 上输入框字号小于 16px 会自动放大整页，锁死 16px */
+  .tline input,.tline textarea{font-size:16px}
+  #termLog{max-height:15vh}
+  .term-hint{display:none}
+  .keybar{padding-bottom:calc(.4em + env(safe-area-inset-bottom,0px))}
+  /* 手机上关掉常驻的噪点/扫线动画，省一整块持续重绘和电量 */
+  .fx-grain{animation:none;opacity:.04}
+  .fx-scan{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;transition-duration:.05ms !important}
