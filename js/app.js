@@ -396,18 +396,23 @@
 
   /* ---------------- 灯箱 ---------------- */
   let lbI = 0;
+  const isVideo = s => /\.(mp4|webm|mov|m4v)$/i.test(s);
+  const renderMedia = (s, title, n = 0) => isVideo(s)
+    ? `<video src="${s}" controls playsinline preload="metadata" aria-label="${title} ${n + 1}"></video>`
+    : `<img src="${s}" alt="${title} ${n + 1}" decoding="async" ${n ? 'loading="lazy"' : ''}>`;
   function openLb(i) {
     lbI = i; const w = CONTENT.gallery[curCat].items[i];
+    document.documentElement.classList.add('viewing-work');
     const box = $('#lbImg'), frame = $('.lb-frame');
-    // imgs 是多张图：上下拼成一张长图，在灯箱里滑着看
-    const long = Array.isArray(w.imgs) && w.imgs.length > 0;
+    const media = Array.isArray(w.media) && w.media.length ? w.media : w.imgs;
+    // media/imgs 是多张素材：上下拼成一张作品长页，在灯箱里滑着看
+    const long = Array.isArray(media) && media.length > 0;
     box.classList.toggle('long', long);
     if (long) {
-      box.innerHTML = w.imgs.map((s, n) =>
-        `<img src="${s}" alt="${w.title} ${n + 1}" decoding="async" ${n ? 'loading="lazy"' : ''}>`).join('');
+      box.innerHTML = media.map((s, n) => renderMedia(s, w.title, n)).join('');
     } else {
       box.innerHTML = w.img
-        ? `<img src="${w.img}" alt="${w.title}" decoding="async">`
+        ? renderMedia(w.img, w.title, 0)
         : '这一格还没有放图<br>（图片准备好之后，填进 content.js 就会出现）';
     }
     $('#lbTitle').textContent = w.title;
@@ -423,6 +428,7 @@
   const closeLb = () => {
     $('#lightbox').hidden = true;
     $('#lbImg').innerHTML = '';
+    document.documentElement.classList.remove('viewing-work');
     Sound.move();
   };
 

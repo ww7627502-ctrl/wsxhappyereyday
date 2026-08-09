@@ -79,6 +79,11 @@ kbd{
   40%{opacity:.5;transform:translateX(3%) skewX(4deg)}
   100%{opacity:0;transform:none}
 }
+/* 作品查看时保持画面干净，避免全局扫描线、噪点和暗角压过原图 */
+html.viewing-work .fx-grain,
+html.viewing-work .fx-scan,
+html.viewing-work .fx-vignette,
+html.viewing-work .fx-glitch{display:none}
 
 /* =========================================================
    开机（代码编辑器）
@@ -544,7 +549,7 @@ html.snap .cover,html.snap .torn{scroll-snap-align:start}
   animation:sceneIn .3s both;
 }
 .lb-frame{
-  margin:0;max-width:min(900px,100%);max-height:86vh;overflow:auto;
+  margin:0;width:min(1380px,100%);max-height:86vh;overflow:auto;
   background:linear-gradient(160deg,#f7f2ec,#dad0c4);color:#22171a;
   padding:clamp(10px,1.2vw,18px);box-shadow:0 30px 70px rgba(0,0,0,.8);
 }
@@ -557,6 +562,10 @@ html.snap .cover,html.snap .torn{scroll-snap-align:start}
 /* 长图模式：几张图上下接成一整张，在灯箱里滑着看 */
 .lb-img.long{display:block;min-height:0;padding:0;background:none;font-size:0}
 .lb-img.long img{display:block;width:100%;height:auto;max-height:none;margin:0}
+.lb-img.long video{
+  display:block;width:100%;height:auto;max-height:82vh;margin:0;background:#000;
+}
+.lb-img.long img + video,.lb-img.long video + img,.lb-img.long video + video{margin-top:0}
 .lb-frame figcaption{padding:1em .4em 0}
 .lb-frame figcaption b{display:block;font-size:clamp(15px,1.8vw,22px)}
 .lb-frame figcaption i{font-family:var(--f-mono);font-style:normal;font-size:.7rem;letter-spacing:.16em;color:#7c6a5d}

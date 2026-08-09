@@ -68,114 +68,138 @@ const CONTENT = {
   },
 
   /* ---------- 作品库 ----------
-     六个分类。每个分类里的 items 就是格子，格子数量决定排版：
-     3 个及以内排一行，偶数个排两行。想加就往 items 里加一项。 */
+     四个作品方向。每个分类里的 items 就是该入口下的作品卡片。 */
   gallery: [
     {
-      key: 'keyvisual',
+      key: 'operation',
       no: 'A',
-      name: '主视觉设计',
-      nameEn: 'KEY VISUAL',
-      intro: '整个项目的第一眼。定调子、定气氛，后面所有物料都从这一张里长出来。',
+      name: '运营设计',
+      nameEn: 'OPERATION',
+      intro: '围绕活动和内容运营，把主视觉延展成真正能上线、能传播的一整套物料。',
       items: [
         {
-          title: '玩赚冬奥季 · 主视觉',
-          meta: '主视觉 / 活动',
-          img: 'img/b/kv-winter-cover.jpg',
-          // imgs：多张图上下接成一张长图，点开作品就能滑着看
-          imgs: [
-            'img/b/kv-winter-0.jpg',
-            'img/b/kv-winter-1.jpg',
-            'img/b/kv-winter-2.jpg',
-            'img/b/kv-winter-3.jpg',
+          title: '玩赚冬奥季',
+          meta: '运营设计 / 活动视觉',
+          img: 'img/works/operation/winter-cover.jpg',
+          media: [
+            'img/works/operation/winter-1.jpg',
+            'img/works/operation/winter-2.jpg',
+            'img/works/operation/winter-3.jpg',
+            'img/works/operation/winter-4.jpg',
+            'img/works/operation/winter-5.gif',
           ],
-          desc: '冬奥季活动主视觉，以及从 KV 延展出去的活动界面。',
+          desc: '冬奥季活动视觉，以及从主视觉延展出的连续页面。',
         },
-
-        { 
-          title: 'cider五周年 · 主视觉',
-          meta: '主视觉 / 品牌', 
-          img: 'img/c/kv-cider-0.jpg',
-           // imgs：多张图上下接成一张长图，点开作品就能滑着看
-          imgs: [
-            'img/c/kv-cider-0.jpg',
-            'img/c/kv-cider-1.jpg',
-            'img/c/kv-cider-2.jpg',
-            'img/c/kv-cider-3.jpg',
-            'img/c/kv-cider-4.jpg',
-          ],
-          desc: '' 
-        },
-
         {
-          title: '待放入 · 主视觉 03', 
-          meta: 'KV', 
-          img: '', 
-          desc: '' },
-      ],
-    },
-    {
-      key: 'campaign',
-      no: 'B',
-      name: '活动运营设计',
-      nameEn: 'CAMPAIGN',
-      intro: '实习里做得最多的一块：活动页、大屏通栏、各种尺寸的物料，要好看，也要能按时上线。',
-      items: [
-        { title: '待放入 · 活动页 01', meta: '运营设计', img: '', desc: '' },
+          title: '士气闯新春',
+          meta: '运营设计 / 活动视觉',
+          img: 'img/works/operation/spring-cover.jpg',
+          media: [
+            'img/works/operation/spring-1.jpg',
+            'img/works/operation/spring-2.jpg',
+            'img/works/operation/spring-3.jpg',
+          ],
+          desc: '新春活动视觉与运营页面。',
+        },
+        {
+          title: '职场休闲娱乐二期',
+          meta: '运营设计 / 活动视觉',
+          img: 'img/works/operation/workplace-cover.jpg',
+          media: [
+            'img/works/operation/workplace-1.jpg',
+            'img/works/operation/workplace-2.jpg',
+            'img/works/operation/workplace-3.gif',
+            'img/works/operation/workplace-4.jpg',
+          ],
+          desc: '职场休闲娱乐活动二期视觉页面。',
+        },
+        {
+          title: '云一朵成长',
+          meta: '运营设计 / 等级徽章',
+          img: 'img/works/operation/yun-cover.jpg',
+          media: [
+            'img/works/operation/yun-1.jpg',
+          ],
+          desc: '云一朵记录等级徽章设计。',
+        },
       ],
     },
     {
       key: 'aicoding',
-      no: 'C',
-      name: 'AI Coding 设计',
+      no: 'B',
+      name: 'AI Coding提效设计',
       nameEn: 'AI CODING',
-      intro: '用 AI 把设计稿直接写成能跑的网页。从 0 到 1，设计和实现都是自己一个人。',
+      intro: '用 AI 把设计稿直接写成能跑的网页，让设计、验证和交付更快地连在一起。',
       items: [
-        { title: '待放入 · 网页 01', meta: 'AI Coding / 网页', img: '', desc: '' },
-      ],
-    },
-    {
-      key: 'brand',
-      no: 'D',
-      name: '品牌设计',
-      nameEn: 'BRANDING',
-      intro: 'IP、标志、视觉体系、周边。做的是一整套能长期用下去的规则，不是一张图。',
-      items: [
-               {
-          title: '待放入 · 主视觉 03', 
-          meta: 'KV', 
-          img: 'img/d/band-0.jpg', 
-
-          imgs: [
-            'img/d/band-0.jpg', 
-            'img/d/band-1.jpg', 
-            'img/d/band-2.jpg', 
-            'img/d/band-3.jpg', 
+        {
+          title: 'AI Coding 资源位提效平台',
+          meta: 'AI Coding / 提效设计',
+          img: 'img/works/aicoding/platform-cover.jpg',
+          media: [
+            'img/works/aicoding/platform-1.jpg',
+            'img/works/aicoding/platform-2.jpg',
+            'img/works/aicoding/platform-3.jpg',
+            'img/works/aicoding/platform-demo-web.m4v',
           ],
-          desc: '' 
+          desc: 'AI Coding 资源位提效平台设计，包含界面与流程展示。',
         },
       ],
     },
     {
-      key: 'illust',
-      no: 'E',
-      name: '插画设计',
-      nameEn: 'ILLUSTRATION',
-      intro: '画画是我坚持最久的一件事。水彩、板绘都试过，最喜欢水彩——多一点少一点水都不一样。',
+      key: 'multi',
+      no: 'C',
+      name: '多端设计',
+      nameEn: 'MULTI-PLATFORM',
+      intro: '面向不同屏幕和使用场景的界面设计，让内容在电视、网页和多端设备上都清晰好用。',
       items: [
-        { title: '待放入 · 插画 01', meta: '插画', img: '', desc: '' },
+        {
+          title: '芒果TV多端设计',
+          meta: '多端设计 / UI',
+          img: 'img/works/multi/mgtv-cover.jpg',
+          media: [
+            'img/works/multi/mgtv-1.jpg',
+            'img/works/multi/mgtv-2.jpg',
+            'img/works/multi/mgtv-3.jpg',
+          ],
+          desc: '芒果TV多端视觉与界面设计。',
+        },
       ],
     },
     {
       key: 'other',
-      no: 'F',
-      name: '其他',
+      no: 'D',
+      name: '其他设计',
       nameEn: 'OTHERS',
-      intro: '不好归类但我很喜欢的东西：手工、手账拼贴、掐丝珐琅、还有一些没做完的念头。',
+      intro: '品牌、插画和其他难以归类但值得展示的视觉尝试。',
       items: [
-        { title: '待放入 · 手工', meta: '手作', img: '', desc: '' },
-        { title: '待放入 · 手账拼贴', meta: '拼贴', img: '', desc: '' },
-        { title: '待放入 · 掐丝珐琅', meta: '非遗尝试', img: '', desc: '' },
+        {
+          title: 'Cider五周年',
+          meta: '品牌视觉',
+          img: 'img/works/other/cider-cover.jpg',
+          media: [
+            'img/works/other/cider-1.jpg',
+            'img/works/other/cider-2.jpg',
+          ],
+          desc: '',
+        },
+        {
+          title: '轮上山河插画设计',
+          meta: '插画设计',
+          img: 'img/works/other/river-cover.jpg',
+          media: [
+            'img/works/other/river-1.jpg',
+          ],
+          desc: '',
+        },
+        {
+          title: '毛屿品牌设计',
+          meta: '品牌设计',
+          img: 'img/works/other/maoyu-cover.jpg',
+          media: [
+            'img/works/other/maoyu-1.jpg',
+          ],
+          desc: '',
+        },
       ],
     },
   ],
