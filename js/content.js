@@ -140,7 +140,7 @@ const CONTENT = {
             'img/works/aicoding/platform-1.jpg',
             'img/works/aicoding/platform-2.jpg',
             'img/works/aicoding/platform-3.jpg',
-            'img/works/aicoding/platform-cover.jpg',
+            'img/works/aicoding/platform-4.jpg',
             'img/works/aicoding/platform-demo-web.m4v',
           ],
           desc: 'AI Coding 资源位提效平台设计，包含界面与流程展示。',
