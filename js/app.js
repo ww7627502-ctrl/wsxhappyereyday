@@ -28,6 +28,7 @@
      默认全开（BGM + 音效）。只有自己按 M / 点右上角 ♪ 才会关，关了会记住。 */
   const Sound = {
     on: store.get('sound', true), ctx: null, bgm: null, noiseBuf: null,
+    videoMuteDepth: 0, videoWasPlaying: false,
     init() {
       if (!this.ctx) {
         try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
@@ -94,6 +95,25 @@
       b.setAttribute('aria-pressed', String(v));
       store.set('sound', v);
       if (this.bgm) v ? this.bgm.play().catch(() => {}) : this.bgm.pause();
+    },
+    muteBgmForVideo() {
+      this.init();
+      if (!this.bgm) return;
+      this.videoMuteDepth++;
+      if (this.videoMuteDepth > 1) return;
+      this.videoWasPlaying = !this.bgm.paused;
+      if (this.videoWasPlaying) this.bgm.pause();
+    },
+    restoreBgmFromVideo(force = false) {
+      if (force) {
+        this.videoMuteDepth = 0;
+      } else if (this.videoMuteDepth > 0) {
+        this.videoMuteDepth--;
+      }
+      if (this.videoMuteDepth > 0) return;
+      if (!this.videoWasPlaying) return;
+      this.videoWasPlaying = false;
+      if (this.on && this.bgm) this.bgm.play().catch(() => {});
     },
     toggle() {
       this.setOn(!this.on);
@@ -210,6 +230,7 @@
 
   function start() {
     // 一进来就要有 BGM（这一步是用户手势，浏览器才允许播放）
+    Sound.unlock();
     Sound.setOn(Sound.on);
     $('#boot').classList.add('off');
     setTimeout(() => { $('#boot').hidden = true; }, 520);
@@ -236,26 +257,12 @@
       Sound.move();
     });
 
-    // 正放到尾 → 逐帧倒放回开头 → 再正放，循环
-    let raf = 0, prev = 0;
-    const stop = () => { cancelAnimationFrame(raf); raf = 0; prev = 0; };
-    const rewind = t => {
-      const dt = prev ? (t - prev) / 1000 : 0;
-      prev = t;
-      const next = v.currentTime - dt;
-      if (next <= .04) { prev = 0; v.currentTime = 0; v.play().catch(() => {}); return; }
-      v.currentTime = next;
-      raf = requestAnimationFrame(rewind);
-    };
-    // 手机和小屏不做逐帧倒放：scrub currentTime 很吃 CPU 和电，直接循环播
-    const light = matchMedia('(max-width:900px)').matches
-      || matchMedia('(prefers-reduced-motion:reduce)').matches;
-    if (light) v.loop = true;
-    else v.addEventListener('ended', () => { stop(); raf = requestAnimationFrame(rewind); });
+    // 封面视频只做普通循环，不再逐帧倒放回去；后者会额外吃 CPU 和电
+    v.loop = true;
 
     // 不在目录页、或者切到别的标签页，就把视频和 rAF 都停掉
     coverCtl = {
-      pause() { stop(); v.pause(); },
+      pause() { v.pause(); },
       resume() { v.play().catch(() => {}); },
     };
     document.addEventListener('visibilitychange', () => {
@@ -405,6 +412,7 @@
     document.documentElement.classList.add('viewing-work');
     const box = $('#lbImg'), frame = $('.lb-frame');
     const media = Array.isArray(w.media) && w.media.length ? w.media : w.imgs;
+    const shouldMuteBgm = !!w.muteBgmOnPlay;
     // media/imgs 是多张素材：上下拼成一张作品长页，在灯箱里滑着看
     const long = Array.isArray(media) && media.length > 0;
     box.classList.toggle('long', long);
@@ -415,6 +423,13 @@
         ? renderMedia(w.img, w.title, 0)
         : '这一格还没有放图<br>（图片准备好之后，填进 content.js 就会出现）';
     }
+    $$('video', box).forEach(v => {
+      const mute = () => { if (shouldMuteBgm) Sound.muteBgmForVideo(); };
+      const restore = () => { if (shouldMuteBgm) Sound.restoreBgmFromVideo(); };
+      v.addEventListener('play', mute);
+      v.addEventListener('pause', restore);
+      v.addEventListener('ended', restore);
+    });
     $('#lbTitle').textContent = w.title;
     $('#lbMeta').textContent = (w.meta || '') + (long ? '　↕ 上下滑动看长图' : '');
     $('#lbDesc').textContent = w.desc || '';
@@ -429,6 +444,7 @@
     $('#lightbox').hidden = true;
     $('#lbImg').innerHTML = '';
     document.documentElement.classList.remove('viewing-work');
+    Sound.restoreBgmFromVideo(true);
     Sound.move();
   };
 

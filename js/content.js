@@ -135,6 +135,7 @@ const CONTENT = {
           title: 'AI Coding 资源位提效平台',
           meta: 'AI Coding / 提效设计',
           img: 'img/works/aicoding/platform-cover.jpg',
+          muteBgmOnPlay: true,
           media: [
             'img/works/aicoding/platform-1.jpg',
             'img/works/aicoding/platform-2.jpg',
@@ -158,8 +159,10 @@ const CONTENT = {
           img: 'img/works/multi/mgtv-cover.jpg',
           media: [
             'img/works/multi/mgtv-1.jpg',
-            'img/works/multi/mgtv-2.jpg',
             'img/works/multi/mgtv-3.jpg',
+            'img/works/multi/mgtv-2.jpg',
+            'img/works/multi/mgtv-cover.jpg',
+            'img/works/multi/mgtv-demo-web.m4v',
           ],
           desc: '芒果TV多端视觉与界面设计。',
         },
