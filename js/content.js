@@ -78,6 +78,38 @@ const CONTENT = {
       intro: '围绕活动和内容运营，把主视觉延展成真正能上线、能传播的一整套物料。',
       items: [
         {
+          title: '职场休闲娱乐二期',
+          meta: '运营设计 / 活动视觉',
+          img: 'img/works/operation/workplace-cover.jpg',
+          media: [
+            'img/works/operation/workplace-1.jpg',
+            'img/works/operation/workplace-2.jpg',
+            'img/works/operation/workplace-3.gif',
+            'img/works/operation/workplace-4.jpg',
+          ],
+          desc: '职场休闲娱乐活动二期视觉页面。',
+        },
+        {
+          title: '开业季师生优惠',
+          meta: '运营设计 / 活动视觉',
+          img: 'img/works/operation/school-cover.jpg',
+          media: [
+            'img/works/operation/school-1.jpg',
+            'img/works/operation/school-2.jpg',
+            'img/works/operation/school-cover.jpg',
+          ],
+          desc: '开业季师生优惠活动视觉页面。',
+        },
+        {
+          title: '云一朵成长',
+          meta: '运营设计 / 等级徽章',
+          img: 'img/works/operation/yun-cover.jpg',
+          media: [
+            'img/works/operation/yun-1.jpg',
+          ],
+          desc: '云一朵记录等级徽章设计。',
+        },
+        {
           title: '玩赚冬奥季',
           meta: '运营设计 / 活动视觉',
           img: 'img/works/operation/winter-cover.jpg',
@@ -100,27 +132,6 @@ const CONTENT = {
             'img/works/operation/spring-3.jpg',
           ],
           desc: '新春活动视觉与运营页面。',
-        },
-        {
-          title: '职场休闲娱乐二期',
-          meta: '运营设计 / 活动视觉',
-          img: 'img/works/operation/workplace-cover.jpg',
-          media: [
-            'img/works/operation/workplace-1.jpg',
-            'img/works/operation/workplace-2.jpg',
-            'img/works/operation/workplace-3.gif',
-            'img/works/operation/workplace-4.jpg',
-          ],
-          desc: '职场休闲娱乐活动二期视觉页面。',
-        },
-        {
-          title: '云一朵成长',
-          meta: '运营设计 / 等级徽章',
-          img: 'img/works/operation/yun-cover.jpg',
-          media: [
-            'img/works/operation/yun-1.jpg',
-          ],
-          desc: '云一朵记录等级徽章设计。',
         },
       ],
     },
