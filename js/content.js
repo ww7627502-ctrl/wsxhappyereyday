@@ -139,7 +139,7 @@ const CONTENT = {
       key: 'aicoding',
       no: 'B',
       name: 'AI Coding提效设计',
-      nameEn: 'AI CODING',
+      nameEn: 'AI CODING/Vibe Coding',
       intro: '用 AI 把设计稿直接写成能跑的网页，让设计、验证和交付更快地连在一起。',
       items: [
         {
