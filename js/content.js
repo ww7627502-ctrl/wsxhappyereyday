@@ -92,11 +92,11 @@ const CONTENT = {
         {
           title: '开业季师生优惠',
           meta: '运营设计 / 活动视觉',
-          img: 'img/works/operation/school-cover.jpg',
+          img: 'img/works/operation/school-1.jpg',
           media: [
             'img/works/operation/school-1.jpg',
             'img/works/operation/school-2.jpg',
-            'img/works/operation/school-cover.jpg',
+            'img/works/operation/school-3.jpg',
           ],
           desc: '开业季师生优惠活动视觉页面。',
         },
