@@ -651,6 +651,9 @@ html.snap .cover,html.snap .torn{scroll-snap-align:start}
     grid-template-columns:repeat(2,minmax(0,1fr));
     grid-template-rows:none;grid-auto-rows:auto;
   }
+  /* 这一类只有一件作品时，两列布局会把它挤在左边；单件就占满整行，放大居中 */
+  .gal-grid:has(.card:only-child){grid-template-columns:1fr}
+  .gal-grid:has(.card:only-child) .card-img{aspect-ratio:16/10}
   .card-img{flex:0 0 auto;aspect-ratio:4/5}
   .card-cap b{font-size:14px}
 
