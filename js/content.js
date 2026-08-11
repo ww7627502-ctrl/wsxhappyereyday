@@ -78,7 +78,7 @@ const CONTENT = {
       intro: '围绕活动和内容运营，把主视觉延展成真正能上线、能传播的一整套物料。',
       items: [
         {
-          title: '开学季师生优惠',
+          title: '开业季师生优惠',
           meta: '运营设计 / 活动视觉',
           img: 'img/works/operation/school-1.jpg',
           media: [
@@ -86,7 +86,7 @@ const CONTENT = {
             'img/works/operation/school-2.jpg',
             'img/works/operation/school-3.jpg',
           ],
-          desc: '开学季师生优惠活动视觉页面。',
+          desc: '开业季师生优惠活动视觉页面。',
         },
         {
           title: '职场休闲娱乐二期',
@@ -110,6 +110,49 @@ const CONTENT = {
           desc: '云一朵记录等级徽章设计。',
         },
         {
+          title: 'AI Coding 资源位提效平台',
+          meta: 'AI Coding / 提效设计',
+          img: 'img/works/aicoding/platform-cover.jpg',
+          muteBgmOnPlay: true,
+          media: [
+            'img/works/aicoding/platform-1.jpg',
+            'img/works/aicoding/platform-2.jpg',
+            'img/works/aicoding/platform-3.jpg',
+            'img/works/aicoding/platform-4.jpg',
+            'img/works/aicoding/platform-demo-web.m4v',
+          ],
+          desc: 'AI Coding 资源位提效平台设计，包含界面与流程展示。',
+        },
+      ],
+    },
+    {
+      key: 'multi',
+      no: 'B',
+      name: '多端设计',
+      nameEn: 'MULTI-PLATFORM',
+      intro: '面向不同屏幕和使用场景的界面设计，让内容在电视、网页和多端设备上都清晰好用。',
+      items: [
+        {
+          title: '芒果TV多端设计',
+          meta: '多端设计 / UI',
+          img: 'img/works/multi/mgtv-cover.jpg',
+          media: [
+            'img/works/multi/mgtv-1.jpg',
+            'img/works/multi/mgtv-3.jpg',
+            'img/works/multi/mgtv-2.jpg',
+          ],
+          desc: '芒果TV多端视觉与界面设计。',
+        },
+      ],
+    },
+    {
+      key: 'aigc',
+      no: 'C',
+      name: 'AIGC设计',
+      nameEn: 'AIGC',
+      intro: '借助 AIGC 工具生成与优化视觉素材，探索生成式设计在活动视觉中的应用。',
+      items: [
+        {
           title: '玩赚冬奥季',
           meta: '运营设计 / 活动视觉',
           img: 'img/works/operation/winter-cover.jpg',
@@ -132,49 +175,6 @@ const CONTENT = {
             'img/works/operation/spring-3.jpg',
           ],
           desc: '新春活动视觉与运营页面。',
-        },
-      ],
-    },
-    {
-      key: 'aicoding',
-      no: 'B',
-      name: 'AI Coding提效设计',
-      nameEn: 'AI CODING/Vibe Coding',
-      intro: '用 AI 把设计稿直接写成能跑的网页，让设计、验证和交付更快地连在一起。',
-      items: [
-        {
-          title: 'AI Coding 资源位提效平台',
-          meta: 'AI Coding / 提效设计',
-          img: 'img/works/aicoding/platform-cover.jpg',
-          muteBgmOnPlay: true,
-          media: [
-            'img/works/aicoding/platform-1.jpg',
-            'img/works/aicoding/platform-2.jpg',
-            'img/works/aicoding/platform-3.jpg',
-            'img/works/aicoding/platform-4.jpg',
-            'img/works/aicoding/platform-demo-web.m4v',
-          ],
-          desc: 'AI Coding 资源位提效平台设计，包含界面与流程展示。',
-        },
-      ],
-    },
-    {
-      key: 'multi',
-      no: 'C',
-      name: '多端设计',
-      nameEn: 'MULTI-PLATFORM',
-      intro: '面向不同屏幕和使用场景的界面设计，让内容在电视、网页和多端设备上都清晰好用。',
-      items: [
-        {
-          title: '芒果TV多端设计',
-          meta: '多端设计 / UI',
-          img: 'img/works/multi/mgtv-cover.jpg',
-          media: [
-            'img/works/multi/mgtv-1.jpg',
-            'img/works/multi/mgtv-3.jpg',
-            'img/works/multi/mgtv-2.jpg',
-          ],
-          desc: '芒果TV多端视觉与界面设计。',
         },
       ],
     },
