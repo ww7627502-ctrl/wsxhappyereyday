@@ -73,7 +73,7 @@ const CONTENT = {
     {
       key: 'operation',
       no: 'A',
-      name: '运营设计',
+      name: '百度网盘项目',
       nameEn: 'OPERATION',
       intro: '围绕活动和内容运营，把主视觉延展成真正能上线、能传播的一整套物料。',
       items: [
@@ -128,7 +128,7 @@ const CONTENT = {
     {
       key: 'multi',
       no: 'B',
-      name: '多端设计',
+      name: '芒果TV项目',
       nameEn: 'MULTI-PLATFORM',
       intro: '面向不同屏幕和使用场景的界面设计，让内容在电视、网页和多端设备上都清晰好用。',
       items: [
