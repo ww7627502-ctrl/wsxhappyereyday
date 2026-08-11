@@ -78,6 +78,17 @@ const CONTENT = {
       intro: '围绕活动和内容运营，把主视觉延展成真正能上线、能传播的一整套物料。',
       items: [
         {
+          title: '开业季师生优惠',
+          meta: '运营设计 / 活动视觉',
+          img: 'img/works/operation/school-1.jpg',
+          media: [
+            'img/works/operation/school-1.jpg',
+            'img/works/operation/school-2.jpg',
+            'img/works/operation/school-3.jpg',
+          ],
+          desc: '开业季师生优惠活动视觉页面。',
+        },
+        {
           title: '职场休闲娱乐二期',
           meta: '运营设计 / 活动视觉',
           img: 'img/works/operation/workplace-cover.jpg',
@@ -88,17 +99,6 @@ const CONTENT = {
             'img/works/operation/workplace-4.jpg',
           ],
           desc: '职场休闲娱乐活动二期视觉页面。',
-        },
-        {
-          title: '开业季师生优惠',
-          meta: '运营设计 / 活动视觉',
-          img: 'img/works/operation/school-1.jpg',
-          media: [
-            'img/works/operation/school-1.jpg',
-            'img/works/operation/school-2.jpg',
-            'img/works/operation/school-3.jpg',
-          ],
-          desc: '开业季师生优惠活动视觉页面。',
         },
         {
           title: '云一朵成长',
